@@ -64,6 +64,7 @@ func createComponent(component ComponentDefinition, outfolderBase string, bindin
 	outputFolder := path.Join(outfolderBase, component.NameSpace+"_component")
 	outputFolderBindings := path.Join(outputFolder, "Bindings")
 	outputFolderExamples := path.Join(outputFolder, "Examples")
+	outputFolderDocumentation := path.Join(outputFolder, "Documentations")
 	outputFolderImplementations := path.Join(outputFolder, "Implementations")
 	
 	if bindingsDirectoryOverride != "" {
@@ -146,6 +147,18 @@ func createComponent(component ComponentDefinition, outfolderBase string, bindin
 
 			case "CppDynamic":
 				{		
+				
+					outputFolderDocumentationCppExplicit := "";
+					
+					if (binding.Documentation != "") {
+					
+						outputFolderDocumentationCppExplicit = outputFolderDocumentation + "/Cpp"
+						err = os.MkdirAll(outputFolderDocumentationCppExplicit, os.ModePerm)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+				
 					outputFolderBindingCppDynamic := outputFolderBindings + "/CppDynamic"
 					err = os.MkdirAll(outputFolderBindingCppDynamic, os.ModePerm)
 					if err != nil {
@@ -168,7 +181,7 @@ func createComponent(component ComponentDefinition, outfolderBase string, bindin
 					}
 
 					err = BuildBindingCppExplicit(component, outputFolderBindingCppDynamic, outputFolderExampleCppDynamic,
-						indentString, binding.ClassIdentifier)
+						outputFolderDocumentationCppExplicit, indentString, binding.ClassIdentifier)
 					if err != nil {
 						return err
 					}
@@ -176,6 +189,16 @@ func createComponent(component ComponentDefinition, outfolderBase string, bindin
 
 			case "Cpp":
 				{
+					outputFolderDocumentationCppImplicit := "";
+					
+					if (binding.Documentation != "") {
+						outputFolderDocumentationCppImplicit = outputFolderDocumentation + "/Cpp";
+						err = os.MkdirAll(outputFolderDocumentationCppImplicit, os.ModePerm)
+						if err != nil {
+							log.Fatal(err)
+						}
+					}
+
 					outputFolderBindingCppImplicit := outputFolderBindings + "/Cpp"
 					err = os.MkdirAll(outputFolderBindingCppImplicit, os.ModePerm)
 					if err != nil {
@@ -204,7 +227,7 @@ func createComponent(component ComponentDefinition, outfolderBase string, bindin
 					}
 
 					err = BuildBindingCppImplicit(component, outputFolderBindingCppImplicit, outputFolderExampleCppImplicit,
-						indentString, binding.ClassIdentifier)
+						outputFolderDocumentationCppImplicit, indentString, binding.ClassIdentifier)
 					if err != nil {
 						return err
 					}
@@ -506,7 +529,7 @@ func printUsageInfo() {
 }
 
 func main() {
-	ACTVersion := "1.7.0-develop"
+	ACTVersion := "1.8.0-develop"
 	fmt.Fprintln(os.Stdout, "Automatic Component Toolkit v"+ACTVersion)
 	if len(os.Args) < 2 {
 		printUsageInfo()

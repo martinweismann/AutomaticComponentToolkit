@@ -79,6 +79,7 @@ type ComponentDefinitionMethod struct {
 	XMLName xml.Name `xml:"method"`
 	MethodName string `xml:"name,attr"`
 	MethodDescription string `xml:"description,attr"`
+	DisableStringOutCache bool `xml:"disablestringoutcache,attr"`
 	Params   []ComponentDefinitionParam `xml:"param"`
 }
 
@@ -139,6 +140,7 @@ type ComponentDefinitionBinding struct {
 	Language string `xml:"language,attr"`
 	Indentation string `xml:"indentation,attr"`
 	ClassIdentifier string `xml:"classidentifier,attr"`
+	Documentation string `xml:"documentation,attr"`
 	Version string `xml:"version,attr"`
 }
 
@@ -1032,7 +1034,7 @@ func (component *ComponentDefinition) CheckComponentDefinition() (error) {
 
 
 // CheckHeaderSpecialFunction checks a special function of the header against their required definitions
-func CheckHeaderSpecialFunction (method ComponentDefinitionMethod, global ComponentDefinitionGlobal) (int, error) {
+func CheckHeaderSpecialFunction(method ComponentDefinitionMethod, global ComponentDefinitionGlobal) (int, error) {
 
 	if (global.ReleaseMethod == "") {
 		return eSpecialMethodNone, errors.New ("No release method specified");

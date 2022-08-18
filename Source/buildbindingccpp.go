@@ -115,7 +115,8 @@ func BuildBindingCExplicit(component ComponentDefinition, outputFolder string, o
 }
 
 // BuildBindingCppImplicit builds dynamic C++-bindings of a library's API in form of implicitly linked functions handles.
-func BuildBindingCppImplicit(component ComponentDefinition, outputFolder string, outputFolderExample string, indentString string, ClassIdentifier string) error {
+func BuildBindingCppImplicit(component ComponentDefinition, outputFolder string, outputFolderExample string, 
+	outputFolderDocumentation string, indentString string, ClassIdentifier string) error {
 	forceRecreation := false
 	ExplicitLinking := false
 
@@ -168,8 +169,20 @@ func BuildBindingCppImplicit(component ComponentDefinition, outputFolder string,
 			log.Printf("Omitting recreation of C++-example CMakeLists-file \"%s\"", CPPCMake)
 		}
 	}
+
+	if (outputFolderDocumentation != "") {
+
+		err = BuildCCPPDocumentation(component, outputFolderDocumentation, ClassIdentifier)
+		if err != nil {
+			return err
+		}
+		
+	}
+
+
 	return nil
 }
+
 
 func buildDynamicCCPPHeader(component ComponentDefinition, w LanguageWriter, NameSpace string, BaseName string,
 	headerOnly bool, useCPPTypes bool) error {
@@ -415,7 +428,9 @@ func buildDynamicCLoadTableCode(component ComponentDefinition, w LanguageWriter,
 
 	w.Writeln("#ifdef _WIN32")
 	w.Writeln("// Convert filename to UTF16-string")
-	w.Writeln("int nLength = static_cast<int>(strnlen_s(pLibraryFileName, MAX_PATH));")
+	w.Writeln("int nLength = 0;")
+	w.Writeln("while ((pLibraryFileName[nLength] != 0) && (nLength < MAX_PATH))")
+	w.Writeln("  nLength++;")
 	w.Writeln("int nBufferSize = nLength * 2 + 2;")
 	if (!useStrictC) {
 		w.Writeln("std::vector<wchar_t> wsLibraryFileName(nBufferSize);")
@@ -525,7 +540,7 @@ func buildDynamicCImplementation(component ComponentDefinition, w LanguageWriter
 	return nil
 }
 
-func writeDynamicCPPMethodDeclaration(method ComponentDefinitionMethod, w LanguageWriter, NameSpace string, ClassIdentifier string, ClassName string) error {
+func getDynamicCPPMethodParameters(method ComponentDefinitionMethod, NameSpace string, ClassIdentifier string, ClassName string) (string, string, error) {
 	parameters := ""
 	returntype := "void"
 
@@ -562,12 +577,19 @@ func writeDynamicCPPMethodDeclaration(method ComponentDefinitionMethod, w Langua
 		case "return":
 			returntype = getBindingCppParamType(param.ParamType, param.ParamClass, NameSpace, ClassIdentifier, false)
 		default:
-			return fmt.Errorf("invalid method parameter passing \"%s\" for %s.%s(%s)", param.ParamPass, ClassName, method.MethodName, param.ParamName)
+			return "", "", fmt.Errorf("invalid method parameter passing \"%s\" for %s.%s(%s)", param.ParamPass, ClassName, method.MethodName, param.ParamName)
 		}
 	}
 
-	w.Writeln("  inline %s %s(%s);", returntype, method.MethodName, parameters)
+	return parameters, returntype, nil
+}
 
+func writeDynamicCPPMethodDeclaration(method ComponentDefinitionMethod, w LanguageWriter, NameSpace string, ClassIdentifier string, ClassName string) error {
+	parameters, returntype, err := getDynamicCPPMethodParameters(method, NameSpace, ClassIdentifier, ClassName)
+	if (err!= nil) {
+		return err
+	}
+	w.Writeln("  inline %s %s(%s);", returntype, method.MethodName, parameters)
 	return nil
 }
 
@@ -969,12 +991,12 @@ func writeCPPInputVector(w LanguageWriter, NameSpace string, ClassIdentifier str
 	w.Writeln("  ")
 	w.Writeln("public:")
 	w.Writeln("  ")
-	w.Writeln("  explicit C%sInputVector( const std::vector<T>& vec)", ClassIdentifier)
+	w.Writeln("  C%sInputVector(const std::vector<T>& vec)", ClassIdentifier)
 	w.Writeln("    : m_data( vec.data() ), m_size( vec.size() )")
 	w.Writeln("  {")
 	w.Writeln("  }")
 	w.Writeln("  ")
-	w.Writeln("  C%sInputVector( const T* in_data, size_t in_size)", ClassIdentifier)
+	w.Writeln("  C%sInputVector(const T* in_data, size_t in_size)", ClassIdentifier)
 	w.Writeln("    : m_data( in_data ), m_size(in_size )")
 	w.Writeln("  {")
 	w.Writeln("  }")
@@ -1090,6 +1112,20 @@ func getBindingCppVariableName(param ComponentDefinitionParam) string {
 	return ""
 }
 
+
+func getCPPInheritanceSpecifier(component ComponentDefinition, class ComponentDefinitionClass, cppClassPrefix string, ClassIdentifier string) (string, string) {
+	cppParentClassName := ""
+	inheritanceSpecifier := ""
+	if !component.isBaseClass(class) {
+		if class.ParentClass == "" {
+			cppParentClassName = cppClassPrefix + ClassIdentifier + component.Global.BaseClassName
+		} else {
+			cppParentClassName = cppClassPrefix + ClassIdentifier+ class.ParentClass
+		}
+		inheritanceSpecifier = fmt.Sprintf(": public %s ", cppParentClassName)
+	}
+	return cppParentClassName, inheritanceSpecifier
+}
 
 func buildCppHeader(component ComponentDefinition, w LanguageWriter, NameSpace string, BaseName string, ClassIdentifier string, ExplicitLinking bool) error {
 	useCPPTypes := true
@@ -1395,16 +1431,7 @@ func buildCppHeader(component ComponentDefinition, w LanguageWriter, NameSpace s
 		class := component.Classes[i]
 		cppClassName := cppClassPrefix + ClassIdentifier + class.ClassName
 
-		cppParentClassName := ""
-		inheritanceSpecifier := ""
-		if !component.isBaseClass(class) {
-			if class.ParentClass == "" {
-				cppParentClassName = cppClassPrefix + ClassIdentifier + component.Global.BaseClassName
-			} else {
-				cppParentClassName = cppClassPrefix + ClassIdentifier+ class.ParentClass
-			}
-			inheritanceSpecifier = fmt.Sprintf(": public %s ", cppParentClassName)
-		}
+		cppParentClassName, inheritanceSpecifier := getCPPInheritanceSpecifier(component, class, cppClassPrefix, ClassIdentifier)
 
 		w.Writeln("  ")
 		w.Writeln("/*************************************************************************************************************************")
@@ -1592,7 +1619,7 @@ func buildCppHeader(component ComponentDefinition, w LanguageWriter, NameSpace s
 
 // BuildBindingCppExplicit builds headeronly C++-bindings of a library's API in form of expliclty loaded function handles.
 func BuildBindingCppExplicit(component ComponentDefinition, outputFolder string, outputFolderExample string,
-	indentString string, ClassIdentifier string) error {
+	outputFolderDocumentation string, indentString string, ClassIdentifier string) error {
 	forceRecreation := false
 	ExplicitLinking := true
 	namespace := component.NameSpace
@@ -1658,12 +1685,21 @@ func BuildBindingCppExplicit(component ComponentDefinition, outputFolder string,
 			log.Printf("Omitting recreation of C++Dynamic example file \"%s\"", DynamicCPPCMake)
 		}
 	}
+	
+	if (outputFolderDocumentation != "") {
+
+		err = BuildCCPPDocumentation(component, outputFolderDocumentation, ClassIdentifier)
+		if err != nil {
+			return err
+		}
+		
+	}
 
 	return nil
 }
 
 
-func buildDynamicCppExample(componentdefinition ComponentDefinition, w LanguageWriter, outputFolder string, ClassIdentifier string, ExplicitLinking bool) error {
+func buildDynamicCppExample(componentdefinition ComponentDefinition, w LanguageWriter, outputFolder string, ClassIdentifier string, ExplicitLinking bool) {
 	NameSpace := componentdefinition.NameSpace
 	BaseName := componentdefinition.BaseName
 
@@ -1712,8 +1748,6 @@ func buildDynamicCppExample(componentdefinition ComponentDefinition, w LanguageW
 	w.Writeln("  return 0;")
 	w.Writeln("}")
 	w.Writeln("")
-
-	return nil
 }
 
 func buildCppDynamicExampleCMake(componentdefinition ComponentDefinition, w LanguageWriter, outputFolder string, outputFolderExample string, ExplicitLinking bool) error {

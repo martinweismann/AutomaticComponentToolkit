@@ -1,0 +1,15 @@
+on: [push]
+
+jobs:
+  build_with_docker_job:
+    runs-on: ubuntu-latest
+    name: A job to build ACT inside Docker
+    steps:
+      - name: build action step
+        id: build
+        uses: Autodesk/AutomaticComponentToolkit@v1
+        with:
+          command: 'build'
+      # Use the output from the `hello` step
+      - name: Get the build time
+        run: echo "The build time was ${{ steps.build.outputs.time }}"

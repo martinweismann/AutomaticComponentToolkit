@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: build action step
         id: build
-        uses: Autodesk/AutomaticComponentToolkit@v1
+        uses: martinweismann/AutomaticComponentToolkit@actionV1
         with:
           command: 'build'
       # Use the output from the `hello` step

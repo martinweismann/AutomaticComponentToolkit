@@ -65,20 +65,24 @@ RUN dnf -y install \
            yum-utils \
            && yum clean all
 
-# Create user
-RUN groupadd docker \
-    && useradd -ms /bin/bash --uid $USER_ID -g docker -G wheel user \
-    && printf "user:user" | chpasswd \
-    && printf "user ALL= NOPASSWD: ALL\\n" >> /etc/sudoers
+# # Create user
+# RUN groupadd docker \
+#     && useradd -ms /bin/bash --uid $USER_ID -g docker -G wheel user \
+#     && printf "user:user" | chpasswd \
+#     && printf "user ALL= NOPASSWD: ALL\\n" >> /etc/sudoers
 
-# Initialize Toolkit
-RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
-RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
+# # Initialize Toolkit
+# RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
+# RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
 
-VOLUME /data
+# VOLUME /data
 
-# Run Container as nonroot
-USER user
-WORKDIR /data
+# # Run Container as nonroot
+# USER user
+# WORKDIR /data
 
-ENTRYPOINT [ "/bin/bash", "-l" ]
+# ENTRYPOINT [ "/bin/bash", "-l" ]
+COPY Build/entrypoint.sh /entrypoint.sh
+
+# Code file to execute when the docker container starts up (`entrypoint.sh`)
+ENTRYPOINT ["/entrypoint.sh"]

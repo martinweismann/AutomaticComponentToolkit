@@ -9,7 +9,7 @@ jobs:
         uses: actions/checkout@v3
       - name: build action step
         id: build
-        uses: martinweismann/AutomaticComponentToolkit@actionV1
+        uses: martinweismann/AutomaticComponentToolkit@rtti-native-typed-handle2
         with:
           command: 'build'
       # Use the output from the `hello` step

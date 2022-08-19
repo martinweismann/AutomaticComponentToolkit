@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to build ACT inside Docker
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: build action step
         id: build
         uses: martinweismann/AutomaticComponentToolkit@actionV1

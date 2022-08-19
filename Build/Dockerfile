@@ -2,11 +2,11 @@ FROM centos:centos8
 
 LABEL maintainer="Andrii Anpilogov (andrii.anpilogov@autodesk.com)"
 
-ARG USER_ID
-ARG GROUP_ID
+# ARG USER_ID
+# ARG GROUP_ID
 
-RUN : "${USER_ID:?Build argument needs to be set and non-empty.}" \
-    : "${GROUP_ID:?Build argument needs to be set and non-empty.}"
+# RUN : "${USER_ID:?Build argument needs to be set and non-empty.}" \
+#    : "${GROUP_ID:?Build argument needs to be set and non-empty.}"
 
 RUN [ -e /etc/yum.conf ] && sed -i '/tsflags=nodocs/d' /etc/yum.conf || true
 

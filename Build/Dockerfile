@@ -12,12 +12,16 @@ RUN [ -e /etc/yum.conf ] && sed -i '/tsflags=nodocs/d' /etc/yum.conf || true
 
 # RUN yum install -y icu
 
-# RUN dnf -y install dnf-plugins-core
-# RUN dnf -y install dnf-plugin-config-manager
-# RUN dnf -y update
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+RUN yum update -y
 
-# RUN dnf -y install epel-release
-# RUN dnf -y config-manager --set-enabled powertools
+RUN dnf -y install dnf-plugins-core
+RUN dnf -y install dnf-plugin-config-manager
+RUN dnf -y update
+
+RUN dnf -y install epel-release
+RUN dnf -y config-manager --set-enabled powertools
 
 # GCC
 RUN dnf -y install gcc-toolset-9-gcc 

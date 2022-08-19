@@ -16,8 +16,8 @@ RUN [ -e /etc/yum.conf ] && sed -i '/tsflags=nodocs/d' /etc/yum.conf || true
 # RUN dnf -y install dnf-plugin-config-manager
 # RUN dnf -y update
 
-RUN dnf -y install epel-release
-RUN dnf -y config-manager --set-enabled powertools
+# RUN dnf -y install epel-release
+# RUN dnf -y config-manager --set-enabled powertools
 
 # GCC
 RUN dnf -y install gcc-toolset-9-gcc 

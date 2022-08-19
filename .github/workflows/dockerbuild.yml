@@ -8,10 +8,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: build action step
-        id: Build
+        id: build
         uses: martinweismann/AutomaticComponentToolkit@rtti-native-typed-handle2
         with:
-          command: 'Build'
+          command: 'build'
       # Use the output from the `hello` step
       - name: Get the build time
         run: echo "The build time was ${{ steps.build.outputs.time }}"

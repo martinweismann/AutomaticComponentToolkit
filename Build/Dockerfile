@@ -12,9 +12,9 @@ RUN [ -e /etc/yum.conf ] && sed -i '/tsflags=nodocs/d' /etc/yum.conf || true
 
 # RUN yum install -y icu
 
-RUN dnf -y install dnf-plugins-core
-RUN dnf -y install dnf-plugin-config-manager
-RUN dnf -y update
+# RUN dnf -y install dnf-plugins-core
+# RUN dnf -y install dnf-plugin-config-manager
+# RUN dnf -y update
 
 RUN dnf -y install epel-release
 RUN dnf -y config-manager --set-enabled powertools

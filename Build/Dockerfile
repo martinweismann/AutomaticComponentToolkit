@@ -78,7 +78,7 @@ RUN dnf -y install \
 #     && printf "user ALL= NOPASSWD: ALL\\n" >> /etc/sudoers
 
 # # Initialize Toolkit
-CMD ["cat", "/opt/rh/gcc-toolset-9/enable"]
+RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
 # RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
 # RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
 

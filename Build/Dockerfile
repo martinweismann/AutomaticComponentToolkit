@@ -35,6 +35,7 @@ RUN dnf -y install ninja-build
 # 3.0.4 should be used for validating compiler base compatibility.
 RUN (cd /opt && curl -O -L 'http://downloads.sourceforge.net/project/freepascal/Linux/3.0.4/fpc-3.0.4-1.x86_64.rpm' \
     && rpm -i fpc-3.0.4-1.x86_64.rpm)
+
 # Using 3.2.2 until PolymorphicFactory is reworked to not using generics that are not full functional in 3.0.4.
 # RUN (cd /opt && curl -O -L 'http://downloads.sourceforge.net/project/freepascal/Linux/3.2.2/fpc-3.2.2-1.x86_64.rpm' \
 #     && rpm -i fpc-3.2.2-1.x86_64.rpm)
@@ -42,6 +43,8 @@ RUN (cd /opt && curl -O -L 'http://downloads.sourceforge.net/project/freepascal/
 # Golang
 RUN (cd /opt && curl -O -L https://golang.org/dl/go1.17.2.linux-amd64.tar.gz \
     && tar zxvf go1.17.2.linux-amd64.tar.gz)
+
+RUN export PATH=$PATH:/opt/go/bin
 
 # Java
 RUN dnf -y install \
@@ -86,9 +89,8 @@ RUN dnf -y install \
 # WORKDIR /data
 
 # ENTRYPOINT [ "/bin/bash", "-l" ]
-RUN ls
-RUN pwd
+
 COPY entrypoint.sh /entrypoint.sh
 
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]

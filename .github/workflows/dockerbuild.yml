@@ -8,12 +8,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: build step
-        id: build act
+        id: build_act
         uses: martinweismann/AutomaticComponentToolkit@rtti-native-typed-handle2
         with:
           command: 'act'
       - name: example step
-        id: build and test examples
+        id: build_and_test_examples
         uses: martinweismann/AutomaticComponentToolkit@rtti-native-typed-handle2
         with:
           command: 'examples'

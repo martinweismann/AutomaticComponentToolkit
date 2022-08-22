@@ -93,4 +93,4 @@ RUN dnf -y install \
 # COPY entrypoint.sh /entrypoint.sh
 
 # Code file to execute when the docker container starts up (`Build/build.se`)
-ENTRYPOINT ["Build/build.sh"]
+ENTRYPOINT ["./Build/build.sh"]

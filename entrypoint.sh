@@ -6,14 +6,14 @@ echo "::set-output name=time::$time"
 
 case "$1" in 
     act)
-        ./Build/build.sh
+       sh Build/build.sh
     ;;
     examples)
-        ./Examples/build.sh
+       sh Examples/build.sh
     ;;
     all)
-        ./Build/build.sh
-        ./Examples/build.sh
+       sh Build/build.sh
+       sh Examples/build.sh
     ;;
     *)
     echo "Use one of available commands:"

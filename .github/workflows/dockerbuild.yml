@@ -1,17 +1,21 @@
 on: [push]
 
 jobs:
-  build_with_docker_job:
+  build_with_docker:
     runs-on: ubuntu-latest
-    name: A job to build ACT inside Docker
+    name: Build and test ACT inside Docker
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: build action step
-        id: build
+      - name: build step
+        id: build act
         uses: martinweismann/AutomaticComponentToolkit@rtti-native-typed-handle2
         with:
-          command: 'build'
-      # Use the output from the `hello` step
+          command: 'act'
+      - name: example step
+        id: build and test examples
+        uses: martinweismann/AutomaticComponentToolkit@rtti-native-typed-handle2
+        with:
+          command: 'examples'
       - name: Get the build time
         run: echo "The build time was ${{ steps.build.outputs.time }}"

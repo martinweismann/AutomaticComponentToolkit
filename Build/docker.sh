@@ -22,7 +22,7 @@ case "$1" in
         docker run -it --rm -v $PWD/..:/data --entrypoint bash act-build -l
     ;;
     *)
-    echo "Use one of availbale commands:"
+    echo "Use one of available commands:"
     echo "  ./docker.sh build    - build docker image" 
     echo "  ./docker.sh act      - build ACT binaries" 
     echo "  ./docker.sh examples - build and run projects in Examples folder" 

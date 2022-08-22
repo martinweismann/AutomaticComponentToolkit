@@ -95,4 +95,5 @@ COPY Build/build.sh /build.sh
 
 # Code file to execute when the docker container starts up (`Build/build.sh`)
 # ENTRYPOINT ["./Build/build.sh"]
-ENTRYPOINT ["build.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
+

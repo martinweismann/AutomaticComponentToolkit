@@ -11,6 +11,6 @@ outputs:
     description: 'The time docker ran'
 runs:
   using: 'docker'
-  image: 'Build/Dockerfile'
+  image: 'Dockerfile'
   args:
     - ${{ inputs.command }}

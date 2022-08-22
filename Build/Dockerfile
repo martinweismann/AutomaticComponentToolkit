@@ -44,7 +44,7 @@ RUN (cd /opt && curl -O -L 'http://downloads.sourceforge.net/project/freepascal/
 RUN (cd /opt && curl -O -L https://golang.org/dl/go1.17.2.linux-amd64.tar.gz \
     && tar zxvf go1.17.2.linux-amd64.tar.gz)
 
-RUN export PATH=$PATH:/opt/go/bin
+ENV PATH="${PATH}:/opt/go/bin"
 
 # Java
 RUN dnf -y install \
@@ -90,7 +90,7 @@ RUN dnf -y install \
 
 # ENTRYPOINT [ "/bin/bash", "-l" ]
 
-COPY entrypoint.sh /entrypoint.sh
+# COPY entrypoint.sh /entrypoint.sh
 
-# Code file to execute when the docker container starts up (`entrypoint.sh`)
-ENTRYPOINT ["entrypoint.sh"]
+# Code file to execute when the docker container starts up (`Build/build.se`)
+ENTRYPOINT ["Build/build.sh"]

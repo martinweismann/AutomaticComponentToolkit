@@ -43,6 +43,7 @@ RUN (cd /opt && curl -O -L 'http://downloads.sourceforge.net/project/freepascal/
 # Golang
 RUN (cd /opt && curl -O -L https://golang.org/dl/go1.17.2.linux-amd64.tar.gz \
     && tar zxvf go1.17.2.linux-amd64.tar.gz)
+ENV PATH="${PATH}:/opt/go/bin"
 
 # Java
 RUN dnf -y install \
@@ -77,8 +78,9 @@ RUN dnf -y install \
 #     && printf "user ALL= NOPASSWD: ALL\\n" >> /etc/sudoers
 
 # # Initialize Toolkit
-RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
-RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
+CMD ["cat", "/opt/rh/gcc-toolset-9/enable"]
+# RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
+# RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
 
 # VOLUME /data
 

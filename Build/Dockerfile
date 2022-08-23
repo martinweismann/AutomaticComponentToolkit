@@ -77,7 +77,7 @@ RUN : "${USER_ID:?Build argument needs to be set and non-empty.}" \
 
 # Create user
 RUN groupadd docker \
-    && useradd -ms /bin/bash --uid $USER_ID -g docker -G wheel user \
+    && useradd -ms /bin/bash -g docker -G wheel user \
     && printf "user:user" | chpasswd \
     && printf "user ALL= NOPASSWD: ALL\\n" >> /etc/sudoers
 

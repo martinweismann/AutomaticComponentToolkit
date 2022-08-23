@@ -1,7 +1,7 @@
 FROM centos:centos8 as base
 
-ARG USER_ID=9999
-ARG GROUP_ID=9998
+ARG USER_ID
+ARG GROUP_ID
 
 LABEL maintainer="Andrii Anpilogov (andrii.anpilogov@autodesk.com)"
 
@@ -68,25 +68,25 @@ RUN dnf -y install \
            && yum clean all
 
 # # Initialize Toolkit
-# RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
+RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
 ENV PATH="${PATH}:/opt/go/bin"
 
 # Initialize Toolkit
-RUN : "${USER_ID:?Build argument needs to be set and non-empty.}" \
-    : "${GROUP_ID:?Build argument needs to be set and non-empty.}"
+# RUN : "${USER_ID:?Build argument needs to be set and non-empty.}" \
+#     : "${GROUP_ID:?Build argument needs to be set and non-empty.}"
 
 # Create user
-RUN groupadd docker \
-    && useradd -ms /bin/bash -g docker -G wheel user \
+RUN if [ $USER_ID != "" ] ; then groupadd docker \
+    && useradd -ms /bin/bash --uid $USER_ID -g docker -G wheel user \
     && printf "user:user" | chpasswd \
-    && printf "user ALL= NOPASSWD: ALL\\n" >> /etc/sudoers
+    && printf "user ALL= NOPASSWD: ALL\\n" >> /etc/sudoers ; fi
 
 # Initialize Toolkit
-RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
-RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
+RUN if [ $USER_ID != "" ] ; then echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile ; fi
+RUN if [ $USER_ID != "" ] ; then echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile ; fi
 
 # Run Container as nonroot
-USER user
+# USER user
 
 ENTRYPOINT ["./entrypoint.sh"]
 

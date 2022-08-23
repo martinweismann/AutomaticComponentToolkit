@@ -1,4 +1,4 @@
-# docker.yml
+# action.yml
 name: 'BuildWithDocker'
 description: 'Build ACT with in a Docker container'
 inputs:
@@ -11,3 +11,6 @@ runs:
   image: 'Build/Dockerfile'
   args:
     - ${{ inputs.command }}
+  build-args: |
+      USER_ID=$(id -u)
+      GROUP_ID=$(id -g)

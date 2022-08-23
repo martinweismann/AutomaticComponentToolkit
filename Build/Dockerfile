@@ -83,8 +83,11 @@ RUN groupadd docker \
 # # Initialize Toolkit
 # RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
 # ENV PATH="${PATH}:/opt/go/bin"
-RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
-RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
+# RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
+# RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
+
+RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.profile
+RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.profile
 
 # VOLUME /data
 

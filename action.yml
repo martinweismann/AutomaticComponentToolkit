@@ -11,4 +11,3 @@ runs:
   image: 'Build/Dockerfile'
   args:
     - ${{ inputs.command }}
-  build-args: USER_ID=actuser,group_id=actgroup

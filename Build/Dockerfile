@@ -2,8 +2,11 @@ FROM centos:centos8
 
 LABEL maintainer="Andrii Anpilogov (andrii.anpilogov@autodesk.com)"
 
-ARG USER_ID
-ARG GROUP_ID
+# ARG USER_ID
+# ARG GROUP_ID
+
+ARG USER_ID=9999
+ARG GROUP_ID=9998
 
 RUN : "${USER_ID:?Build argument needs to be set and non-empty.}" \
     : "${GROUP_ID:?Build argument needs to be set and non-empty.}"
@@ -78,10 +81,10 @@ RUN groupadd docker \
     && printf "user ALL= NOPASSWD: ALL\\n" >> /etc/sudoers
 
 # # Initialize Toolkit
-RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
-ENV PATH="${PATH}:/opt/go/bin"
-# RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
-# RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
+# RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
+# ENV PATH="${PATH}:/opt/go/bin"
+RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
+RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
 
 # VOLUME /data
 

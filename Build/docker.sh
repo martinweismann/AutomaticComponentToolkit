@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 
 case "$1" in 
     build) 
-        docker build -t act-build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .
+        docker build -t act-build --build-arg RUNASROOT=false --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) .
     ;;
     act)
         docker run -it --rm -v $PWD/..:/data act-build /data/Build/build.sh

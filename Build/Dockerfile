@@ -1,15 +1,10 @@
-FROM centos:centos8
+ARG RUNASROOT=true
+ARG USER_ID
+ARG GROUP_ID
+
+FROM centos:centos8 as base
 
 LABEL maintainer="Andrii Anpilogov (andrii.anpilogov@autodesk.com)"
-
-# ARG USER_ID
-# ARG GROUP_ID
-
-ARG USER_ID=9999
-ARG GROUP_ID=9998
-
-RUN : "${USER_ID:?Build argument needs to be set and non-empty.}" \
-    : "${GROUP_ID:?Build argument needs to be set and non-empty.}"
 
 RUN [ -e /etc/yum.conf ] && sed -i '/tsflags=nodocs/d' /etc/yum.conf || true
 
@@ -47,7 +42,6 @@ RUN (cd /opt && curl -O -L 'http://downloads.sourceforge.net/project/freepascal/
 RUN (cd /opt && curl -O -L https://golang.org/dl/go1.17.2.linux-amd64.tar.gz \
     && tar zxvf go1.17.2.linux-amd64.tar.gz)
 
-
 # Java
 RUN dnf -y install \
            java-11-openjdk-devel
@@ -74,30 +68,35 @@ RUN dnf -y install \
            yum-utils \
            && yum clean all
 
-# # Create user
+
+# # Version to run as root user
+FROM base AS branch-version-true
+
+# Initialize Toolkit
+RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
+ENV PATH="${PATH}:/opt/go/bin"
+
+# # Version to run as nonroot user
+FROM base AS branch-version-false
+# Initialize Toolkit
+RUN : "${USER_ID:?Build argument needs to be set and non-empty.}" \
+    : "${GROUP_ID:?Build argument needs to be set and non-empty.}"
+
+# Create user
 RUN groupadd docker \
     && useradd -ms /bin/bash --uid $USER_ID -g docker -G wheel user \
     && printf "user:user" | chpasswd \
     && printf "user ALL= NOPASSWD: ALL\\n" >> /etc/sudoers
 
-# # Initialize Toolkit
-# RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
-# ENV PATH="${PATH}:/opt/go/bin"
-# RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
-# RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
-
-RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.profile
-RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.profile
-
-# VOLUME /data
+# Initialize Toolkit
+RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile
+RUN echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile
 
 # Run Container as nonroot
 USER user
-# WORKDIR /data
 
-# ENTRYPOINT [ "/bin/bash", "-l" ]
-
-# COPY entrypoint.sh /entrypoint.sh
+# # select whether to run as root or nonroot user
+FROM branch-version-${RUNASROOT} AS final
 
 ENTRYPOINT ["./entrypoint.sh"]
 

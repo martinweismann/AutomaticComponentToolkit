@@ -69,7 +69,7 @@ RUN dnf -y install \
 
 # # Initialize Toolkit
 # RUN echo "source /opt/rh/gcc-toolset-9/enable" >> /etc/bashrc
-# ENV PATH="${PATH}:/opt/go/bin"
+ENV PATH="${PATH}:/opt/go/bin"
 
 # Initialize Toolkit
 RUN : "${USER_ID:?Build argument needs to be set and non-empty.}" \

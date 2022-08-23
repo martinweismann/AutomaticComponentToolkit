@@ -1,6 +1,6 @@
 ARG RUNASROOT=true
-ARG USER_ID
-ARG GROUP_ID
+ARG USER_ID=0
+ARG GROUP_ID=0
 
 FROM centos:centos8 as base
 

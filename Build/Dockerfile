@@ -50,7 +50,6 @@ RUN rpm --import https://download.mono-project.com/repo/xamarin.gpg \
     && dnf config-manager --add-repo https://download.mono-project.com/repo/centos8-stable.repo \
     && dnf -y install mono-complete
 
-
 # General purpose tools
 RUN dnf -y install \
            glibc-common \
@@ -85,8 +84,4 @@ RUN if [ $USER_ID != "" ] ; then groupadd docker \
 RUN if [ $USER_ID != "" ] ; then echo "source /opt/rh/gcc-toolset-9/enable" >> /home/user/.bash_profile ; fi
 RUN if [ $USER_ID != "" ] ; then echo "export PATH=\$PATH:/opt/go/bin" >> /home/user/.bash_profile ; fi
 
-# Run Container as nonroot
-# USER user
-
 ENTRYPOINT ["./entrypoint.sh"]
-
